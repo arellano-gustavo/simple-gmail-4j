@@ -4,7 +4,7 @@ import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.activation.*;
-
+// https://www.geeksforgeeks.org/sending-email-java-ssltls-authentication/
 public class SendEmailSMTP {
     public static void main(String[] args) {
         // change accordingly
