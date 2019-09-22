@@ -1,75 +1,75 @@
-import com.sun.mail.smtp.SMTPTransport;
+package mx.qbits.sample;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Date;
-import java.util.Properties;
+import java.util.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+import javax.activation.*;
 
 public class SendEmailSMTP {
-
-	// for example, smtp.mailgun.org
-    private static final String SMTP_SERVER = "smtp server ";
-    private static final String USERNAME = "";
-    private static final String PASSWORD = "";
-
-    private static final String EMAIL_FROM = "From@gmail.com";
-    private static final String EMAIL_TO = "email_1@yahoo.com, email_2@gmail.com";
-    private static final String EMAIL_TO_CC = "";
-
-    private static final String EMAIL_SUBJECT = "Test Send Email via SMTP";
-    private static final String EMAIL_TEXT = "Hello Java Mail \n ABC123";
-
     public static void main(String[] args) {
+        // change accordingly
+        String to = "somebody@gmail.com";
 
-        Properties prop = System.getProperties();
-        prop.put("mail.smtp.host", SMTP_SERVER); //optional, defined in SMTPTransport
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.smtp.port", "25"); // default port 25
+        // change accordingly
+        String from = "no-reply@kebblar.io";
 
-        Session session = Session.getInstance(prop, null);
-        Message msg = new MimeMessage(session);
+        // or IP address
+        String host = "smtp.gmail.com";
 
+        // mail id
+        final String username = "no-reply@xyz.io";
+
+        // correct password for gmail id
+        final String password = "secret";
+
+        System.out.println("TLSEmail Start");
+        // Get the session object
+
+        // Get system properties
+        Properties properties = System.getProperties();
+
+        // Setup mail server
+        properties.setProperty("mail.smtp.host", host);
+
+        // SSL Port
+        properties.put("mail.smtp.port", "465");
+
+        // enable authentication
+        properties.put("mail.smtp.auth", "true");
+
+        // SSL Factory
+        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+
+        // creating Session instance referenced to
+        // Authenticator object to pass in
+        // Session.getInstance argument
+        Session session = Session.getDefaultInstance(properties, new javax.mail.Authenticator() {
+
+            // override the getPasswordAuthentication
+            // method
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
+        // compose the message
         try {
-		
-			// from
-            msg.setFrom(new InternetAddress(EMAIL_FROM));
+            // javax.mail.internet.MimeMessage class is mostly
+            // used for abstraction.
+            MimeMessage message = new MimeMessage(session);
 
-			// to 
-            msg.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(EMAIL_TO, false));
+            // header field of the header.
+            message.setFrom(new InternetAddress(from));
 
-			// cc
-            msg.setRecipients(Message.RecipientType.CC,
-                    InternetAddress.parse(EMAIL_TO_CC, false));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            message.setSubject("subject");
+            message.setText("Hello, java & gmail are sending a test email");
 
-			// subject
-            msg.setSubject(EMAIL_SUBJECT);
-			
-			// content 
-            msg.setText(EMAIL_TEXT);
-			
-            msg.setSentDate(new Date());
-
-			// Get SMTPTransport
-            SMTPTransport t = (SMTPTransport) session.getTransport("smtp");
-			
-			// connect
-            t.connect(SMTP_SERVER, USERNAME, PASSWORD);
-			
-			// send
-            t.sendMessage(msg, msg.getAllRecipients());
-
-            System.out.println("Response: " + t.getLastServerResponse());
-
-            t.close();
-
-        } catch (MessagingException e) {
-            e.printStackTrace();
+            // Send message
+            Transport.send(message);
+            System.out.println("Your mail it has been sent..");
+        } catch (MessagingException mex) {
+            mex.printStackTrace();
         }
-
-
     }
 }
