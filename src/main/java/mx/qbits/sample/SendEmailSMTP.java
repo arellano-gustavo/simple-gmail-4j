@@ -56,7 +56,7 @@ public class SendEmailSMTP {
         try {
             // javax.mail.internet.MimeMessage class is mostly
             // used for abstraction.
-            MimeMessage message = new MimeMessage(session);
+            MimeMessage message = new MimeMessage(session); 
 
             // header field of the header.
             message.setFrom(new InternetAddress(from));
